@@ -29,8 +29,12 @@ const renderMovies = (filter = "") => {
     console.log(otherProps);
     // object destructuring & changing name
     // const { title: movieTitle } = info;
-    // const { getFormattedTitle } = movie;
-    let text = movie.getFormattedTitle + " - ";
+
+    let { getFormattedTitle } = movie;
+    getFormattedTitle = getFormattedTitle.bind(movie);
+    // call - execute function right away, when you want to override 'this' : first arg = 'this'
+    // apply - execute function right away, first arg = 'this', pass addtl arguments as an array
+    let text = getFormattedTitle.call(movie) + " - ";
     for (const key in info) {
       if (key !== "title") {
         text = text + `${key}: ${info[key]}`;
@@ -61,9 +65,9 @@ const addMovieHandler = () => {
       [extraName]: extraValue,
     },
     id: Math.random().toString,
-    getFormattedTitle: function () {
-      // this keyword: looks for property in object
-      // always the thing in front of the function
+    // this keyword: looks for property in object
+    // always the thing in front of the function
+    getFormattedTitle() {
       return this.info.title.toUpperCase();
     },
   };
