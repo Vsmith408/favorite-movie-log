@@ -22,12 +22,15 @@ const renderMovies = (filter = "") => {
 
   filteredMovies.forEach((movie) => {
     const movieEl = document.createElement("li");
+    // check if property is IN object w/o destructuring (if (!("info" in movie)) {})
+    // can also do this by putting "movie.info === undefined"
     // object destructuring
     const { info, ...otherProps } = movie;
     console.log(otherProps);
     // object destructuring & changing name
-    const { title: movieTitle } = info;
-    let text = movieTitle + " - ";
+    // const { title: movieTitle } = info;
+    // const { getFormattedTitle } = movie;
+    let text = movie.getFormattedTitle + " - ";
     for (const key in info) {
       if (key !== "title") {
         text = text + `${key}: ${info[key]}`;
@@ -57,7 +60,12 @@ const addMovieHandler = () => {
       title,
       [extraName]: extraValue,
     },
-    id: Math.random(),
+    id: Math.random().toString,
+    getFormattedTitle: function () {
+      // this keyword: looks for property in object
+      // always the thing in front of the function
+      return this.info.title.toUpperCase();
+    },
   };
 
   movies.push(newMovie);
