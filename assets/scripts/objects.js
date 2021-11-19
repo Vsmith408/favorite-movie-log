@@ -32,11 +32,11 @@ const renderMovies = (filter = "") => {
 
     let { getFormattedTitle } = movie;
     getFormattedTitle = getFormattedTitle.bind(movie);
-    // call - execute function right away, when you want to override 'this' : first arg = 'this'
+    // call - execute function right away, when you want to override 'this' : first arg = 'this', pass addtl args separated by commas
     // apply - execute function right away, first arg = 'this', pass addtl arguments as an array
     let text = getFormattedTitle.call(movie) + " - ";
     for (const key in info) {
-      if (key !== "title") {
+      if (key !== "title" && key !== "_title") {
         text = text + `${key}: ${info[key]}`;
       }
     }
@@ -51,17 +51,24 @@ const addMovieHandler = () => {
   const extraName = document.getElementById("extra-name").value;
   const extraValue = document.getElementById("extra-value").value;
 
-  if (
-    title.trim() === "" ||
-    extraName.trim() === "" ||
-    extraValue.trim() === ""
-  ) {
+  if (extraName.trim() === "" || extraValue.trim() === "") {
     return;
   }
 
   const newMovie = {
     info: {
-      title,
+      //   setter - takes value parameter
+      set title(val) {
+        if (val.trim() === "") {
+          this._title = "DEFAULT";
+          return;
+        }
+        this._title = val;
+      },
+      // getter
+      get title() {
+        return this._title;
+      },
       [extraName]: extraValue,
     },
     id: Math.random().toString,
@@ -72,14 +79,20 @@ const addMovieHandler = () => {
     },
   };
 
+  newMovie.info.title = title;
+  console.log(newMovie.info.title);
+
   movies.push(newMovie);
   renderMovies();
 };
 
+// => (arrow func) doesn't bind 'this' to anything. keeps context of binding to global value
+//
 const searchMovieHandler = () => {
   const filterTerm = document.getElementById("filter-title").value;
   renderMovies(filterTerm);
 };
 
+// the browser binds 'this' for you (on event listeners) to the DOM element that triggered the event
 addMovieBtn.addEventListener("click", addMovieHandler);
 searchBtn.addEventListener("click", searchMovieHandler);
